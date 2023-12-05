@@ -27,9 +27,8 @@ export class TasksController implements TaskServiceController {
     return this.tasksService.findAllTasks(ownerId);
   }
 
-  findOneTask(payload: TaskId): Task | Observable<Task> | Promise<Task> {
-    return this.tasksService.findOneTask(payload.id);
-     
+  findOneTask(req: TaskId): Task | Observable<Task> | Promise<Task> {
+    return this.tasksService.findOneTask(req.id);
   }
 
   updateTask(request: UpdateTaskDto): Task | Observable<Task> | Promise<Task> {
@@ -42,6 +41,6 @@ export class TasksController implements TaskServiceController {
     | RemoveTaskResponse
     | Observable<RemoveTaskResponse>
     | Promise<RemoveTaskResponse> {
-    throw new Error('Method not implemented.');
+    return this.tasksService.remove(request.id);
   }
 }

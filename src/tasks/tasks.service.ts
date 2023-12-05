@@ -1,9 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Task } from './entities/task.entity';
 import { Repository } from 'typeorm';
-import { CreateTaskDto, OwnerId, Tasks } from './proto/task';
+import {
+  CreateTaskDto,
+  OwnerId,
+  RemoveTaskResponse,
+  Tasks,
+} from './proto/task';
+import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class TasksService {
@@ -23,15 +34,25 @@ export class TasksService {
     return { Tasks: tasks };
   }
 
-  findOneTask(id: number): Promise<Task> {
-    return this.taskRepo.findOneBy({ id: id });
+  async findOneTask(id: number): Promise<Task> {
+    const res = await this.taskRepo.findOneBy({ id });
+    if (!res) {
+      throw new RpcException('Task not found!');
+    }
+
+    return res;
   }
 
   update(id: number, updateTaskDto: UpdateTaskDto) {
     return `This action updates a #${id} task`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} task`;
+  async remove(id: number): Promise<RemoveTaskResponse> {
+    const res = await this.taskRepo.delete({ id });
+    if (res.affected) {
+      return { isSuccess: true };
+    }
+
+    return { isSuccess: false };
   }
 }

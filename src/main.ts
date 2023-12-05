@@ -6,7 +6,7 @@ import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-    TasksModule,
+    AppModule,
     {
       transport: Transport.GRPC,
       options: {

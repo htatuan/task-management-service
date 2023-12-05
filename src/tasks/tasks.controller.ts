@@ -1,5 +1,4 @@
 import { Controller } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
 import { TasksService } from './tasks.service';
 import {
   CreateTaskDto,
@@ -18,17 +17,19 @@ import { Observable } from 'rxjs';
 @TaskServiceControllerMethods()
 export class TasksController implements TaskServiceController {
   constructor(private readonly tasksService: TasksService) {}
-  createTask(request: CreateTaskDto): Task | Observable<Task> | Promise<Task> {
-    throw new Error('Method not implemented.');
+  createTask(
+    createTaskDto: CreateTaskDto,
+  ): Task | Observable<Task> | Promise<Task> {
+    return this.tasksService.createTask(createTaskDto);
   }
 
-  findAllTasks(request: OwnerId): Tasks {
-    const tasks: Task[] = [{ id: 1, title: 'a', status: 'b', ownerId: 1 }];
-    return { Tasks: tasks };
+  findAllTasks(ownerId: OwnerId): Promise<Tasks> {
+    return this.tasksService.findAllTasks(ownerId);
   }
 
-  findOneTask(request: TaskId): Task | Observable<Task> | Promise<Task> {
-    throw new Error('Method not implemented.');
+  findOneTask(payload: TaskId): Task | Observable<Task> | Promise<Task> {
+    return this.tasksService.findOneTask(payload.id);
+     
   }
 
   updateTask(request: UpdateTaskDto): Task | Observable<Task> | Promise<Task> {

@@ -13,12 +13,12 @@ export interface OwnerId {
 }
 
 export interface UpdateTaskDto {
-  id: string;
+  id: number;
   status: string;
 }
 
 export interface TaskId {
-  id: string;
+  id: number;
 }
 
 export interface Tasks {

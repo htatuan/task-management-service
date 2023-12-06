@@ -25,6 +25,7 @@ export class TasksService {
 
   async findAllTasks(owner: OwnerId): Promise<Tasks> {
     const tasks = await this.taskRepo.findBy({ ownerId: owner.ownerId });
+    
     return { Tasks: tasks };
   }
 
@@ -42,11 +43,18 @@ export class TasksService {
   }
 
   async remove(id: number): Promise<RemoveTaskResponse> {
-    const res = await this.taskRepo.delete({ id });
-    if (res.affected) {
-      return { isSuccess: true };
+    const check = await this.taskRepo.findOneBy({ id });
+    if (!check) {
+      throw new RpcException('Task not found!');
+    } else {
+      if (check.status == 'ARCHIVED') {
+        throw new RpcException('Can not delete this task!');
+      } else {
+        const res = await this.taskRepo.delete({ id });
+        if (res.affected) {
+          return { isSuccess: true };
+        }
+      }
     }
-
-    return { isSuccess: false };
   }
 }

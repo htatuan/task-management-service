@@ -1,11 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity()
 export class Task {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({unique: true})
+  @Column()
   title: string;
 
   @Column()
@@ -13,4 +13,10 @@ export class Task {
 
   @Column()
   ownerId: number;
+
+  @CreateDateColumn()
+  createdAt: string;
+
+  @UpdateDateColumn()
+  updatedAt: string;
 }

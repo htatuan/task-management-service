@@ -1,20 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { UpdateTaskDto } from './dto/update-task.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Task } from './entities/task.entity';
 import { Repository } from 'typeorm';
 import {
   CreateTaskDto,
   OwnerId,
   RemoveTaskResponse,
+  Task,
   Tasks,
+  UpdateTaskDto,
 } from './proto/task';
 import { RpcException } from '@nestjs/microservices';
+import { Task as TaskEntity } from './entities/task.entity';
 
 @Injectable()
 export class TasksService {
-  constructor(@InjectRepository(Task) private taskRepo: Repository<Task>) {}
-  async createTask(createTaskDto: CreateTaskDto) {
+  constructor(@InjectRepository(TaskEntity) private taskRepo: Repository<Task>) {}
+  async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
     const task = await this.taskRepo.findOneBy(createTaskDto);
     if (task) {
       throw new RpcException('Task already exists');
@@ -37,8 +38,17 @@ export class TasksService {
     return res;
   }
 
-  update(id: number, updateTaskDto: UpdateTaskDto) {
-    return `This action updates a #${id} task`;
+  async updateTask(id: number, updateTaskDto: UpdateTaskDto): Promise<Task> {
+    const task = await this.taskRepo.findOneBy({ id });
+    if (!task) {
+      throw new RpcException('Task not found');
+    }
+    return this.taskRepo.save({
+      id,
+      status: updateTaskDto.status,
+      ownerId: task.ownerId,
+      title: task.title,
+    });
   }
 
   async remove(id: number): Promise<RemoveTaskResponse> {

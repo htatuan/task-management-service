@@ -32,7 +32,7 @@ export class TasksController implements TaskServiceController {
   }
 
   updateTask(request: UpdateTaskDto): Task | Observable<Task> | Promise<Task> {
-    throw new Error('Method not implemented.');
+    return this.tasksService.updateTask(request.id, request);
   }
 
   removeTask(

@@ -4,6 +4,7 @@ import {
   CreateTaskDto,
   OwnerId,
   RemoveTaskResponse,
+  SearchRequest,
   Task,
   TaskId,
   TaskServiceController,
@@ -17,6 +18,12 @@ import { Observable } from 'rxjs';
 @TaskServiceControllerMethods()
 export class TasksController implements TaskServiceController {
   constructor(private readonly tasksService: TasksService) {}
+  searchTask(
+    request: SearchRequest,
+  ): Tasks | Promise<Tasks> | Observable<Tasks> {
+    return this.tasksService.searchTask(request);
+  }
+
   createTask(
     createTaskDto: CreateTaskDto,
   ): Task | Observable<Task> | Promise<Task> {

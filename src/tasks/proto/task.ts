@@ -4,6 +4,11 @@ import { Observable } from "rxjs";
 
 export const protobufPackage = "task";
 
+export interface SearchRequest {
+  keyword: string;
+  ownerId: number;
+}
+
 export interface RemoveTaskResponse {
   isSuccess: boolean;
 }
@@ -52,6 +57,8 @@ export interface TaskServiceClient {
   updateTask(request: UpdateTaskDto): Observable<Task>;
 
   removeTask(request: TaskId): Observable<RemoveTaskResponse>;
+
+  searchTask(request: SearchRequest): Observable<Tasks>;
 }
 
 export interface TaskServiceController {
@@ -64,11 +71,20 @@ export interface TaskServiceController {
   updateTask(request: UpdateTaskDto): Promise<Task> | Observable<Task> | Task;
 
   removeTask(request: TaskId): Promise<RemoveTaskResponse> | Observable<RemoveTaskResponse> | RemoveTaskResponse;
+
+  searchTask(request: SearchRequest): Promise<Tasks> | Observable<Tasks> | Tasks;
 }
 
 export function TaskServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["createTask", "findAllTasks", "findOneTask", "updateTask", "removeTask"];
+    const grpcMethods: string[] = [
+      "createTask",
+      "findAllTasks",
+      "findOneTask",
+      "updateTask",
+      "removeTask",
+      "searchTask",
+    ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("TaskService", method)(constructor.prototype[method], method, descriptor);

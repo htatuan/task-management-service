@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
   CreateTaskDto,
   OwnerId,
   RemoveTaskResponse,
+  SearchRequest,
   Task,
   Tasks,
   UpdateTaskDto,
@@ -14,7 +15,9 @@ import { Task as TaskEntity } from './entities/task.entity';
 
 @Injectable()
 export class TasksService {
-  constructor(@InjectRepository(TaskEntity) private taskRepo: Repository<Task>) {}
+  constructor(
+    @InjectRepository(TaskEntity) private taskRepo: Repository<Task>,
+  ) {}
   async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
     const task = await this.taskRepo.findOneBy(createTaskDto);
     if (task) {
@@ -24,9 +27,28 @@ export class TasksService {
     return this.taskRepo.save(newUser);
   }
 
+  async searchTask(searchRequest: SearchRequest): Promise<Tasks> {
+    const query = this.taskRepo.createQueryBuilder('task');
+    query.where({ ownerId: searchRequest.ownerId });
+
+    if (searchRequest.keyword) {
+      query.andWhere(
+        '(LOWER(task.status) LIKE LOWER(:search) OR LOWER(task.title) LIKE LOWER(:search))',
+        { search: `%${searchRequest.keyword}%` },
+      );
+    }
+
+    try {
+      const tasks = await query.getMany();
+      return { Tasks: tasks };
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+  }
+
   async findAllTasks(owner: OwnerId): Promise<Tasks> {
     const tasks = await this.taskRepo.findBy({ ownerId: owner.ownerId });
-    
+
     return { Tasks: tasks };
   }
 

@@ -254,6 +254,24 @@ describe('TasksService', () => {
           new InternalServerErrorException(),
         );
       });
+
+      it('should handle errors and throw RpcException if repository throws an error in get Many', async () => {
+        const searchRequest: SearchRequest = {
+          ownerId: 1,
+          keyword: 'exampleKeyword',
+        };
+        jest.spyOn(taskRepo, 'createQueryBuilder').mockReturnValue({
+          where: jest.fn().mockReturnThis(),
+          andWhere: jest.fn().mockReturnThis(),
+          getMany: jest.fn().mockImplementation(() => {
+            throw new InternalServerErrorException();
+          }),
+        } as any);
+
+        await expect(taskService.searchTask(searchRequest)).rejects.toThrow(
+          new InternalServerErrorException(),
+        );
+      });
     });
   });
 });

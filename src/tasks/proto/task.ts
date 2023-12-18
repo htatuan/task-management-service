@@ -1,8 +1,8 @@
 /* eslint-disable */
-import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
-import { Observable } from "rxjs";
+import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
+import { Observable } from 'rxjs';
 
-export const protobufPackage = "task";
+export const protobufPackage = 'task';
 
 export interface SearchRequest {
   keyword: string;
@@ -45,14 +45,12 @@ export interface Task {
   updatedAt: string;
 }
 
-export const TASK_PACKAGE_NAME = "task";
+export const TASK_PACKAGE_NAME = 'task';
 
 export interface TaskServiceClient {
   createTask(request: CreateTaskDto): Observable<Task>;
 
   findAllTasks(request: OwnerId): Observable<Tasks>;
-
-  findOneTask(request: TaskId): Observable<Task>;
 
   updateTask(request: UpdateTaskDto): Observable<Task>;
 
@@ -66,35 +64,53 @@ export interface TaskServiceController {
 
   findAllTasks(request: OwnerId): Promise<Tasks> | Observable<Tasks> | Tasks;
 
-  findOneTask(request: TaskId): Promise<Task> | Observable<Task> | Task;
-
   updateTask(request: UpdateTaskDto): Promise<Task> | Observable<Task> | Task;
 
-  removeTask(request: TaskId): Promise<RemoveTaskResponse> | Observable<RemoveTaskResponse> | RemoveTaskResponse;
+  removeTask(
+    request: TaskId,
+  ):
+    | Promise<RemoveTaskResponse>
+    | Observable<RemoveTaskResponse>
+    | RemoveTaskResponse;
 
-  searchTask(request: SearchRequest): Promise<Tasks> | Observable<Tasks> | Tasks;
+  searchTask(
+    request: SearchRequest,
+  ): Promise<Tasks> | Observable<Tasks> | Tasks;
 }
 
 export function TaskServiceControllerMethods() {
   return function (constructor: Function) {
     const grpcMethods: string[] = [
-      "createTask",
-      "findAllTasks",
-      "findOneTask",
-      "updateTask",
-      "removeTask",
-      "searchTask",
+      'createTask',
+      'findAllTasks',
+      'updateTask',
+      'removeTask',
+      'searchTask',
     ];
     for (const method of grpcMethods) {
-      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-      GrpcMethod("TaskService", method)(constructor.prototype[method], method, descriptor);
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(
+        constructor.prototype,
+        method,
+      );
+      GrpcMethod('TaskService', method)(
+        constructor.prototype[method],
+        method,
+        descriptor,
+      );
     }
     const grpcStreamMethods: string[] = [];
     for (const method of grpcStreamMethods) {
-      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-      GrpcStreamMethod("TaskService", method)(constructor.prototype[method], method, descriptor);
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(
+        constructor.prototype,
+        method,
+      );
+      GrpcStreamMethod('TaskService', method)(
+        constructor.prototype[method],
+        method,
+        descriptor,
+      );
     }
   };
 }
 
-export const TASK_SERVICE_NAME = "TaskService";
+export const TASK_SERVICE_NAME = 'TaskService';

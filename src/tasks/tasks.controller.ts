@@ -34,10 +34,6 @@ export class TasksController implements TaskServiceController {
     return this.tasksService.findAllTasks(ownerId);
   }
 
-  findOneTask(req: TaskId): Task | Observable<Task> | Promise<Task> {
-    return this.tasksService.findOneTask(req.id);
-  }
-
   updateTask(request: UpdateTaskDto): Task | Observable<Task> | Promise<Task> {
     return this.tasksService.updateTask(request.id, request);
   }

@@ -52,15 +52,6 @@ export class TasksService {
     return { Tasks: tasks };
   }
 
-  async findOneTask(id: number): Promise<Task> {
-    const res = await this.taskRepo.findOneBy({ id });
-    if (!res) {
-      throw new RpcException('Task not found!');
-    }
-
-    return res;
-  }
-
   async updateTask(id: number, updateTaskDto: UpdateTaskDto): Promise<Task> {
     const task = await this.taskRepo.findOneBy({ id });
     if (!task) {
@@ -85,7 +76,7 @@ export class TasksService {
         const res = await this.taskRepo.delete({ id });
         if (res.affected) {
           return { isSuccess: true };
-        }
+        } else throw new RpcException('There is no task deleted');
       }
     }
   }
